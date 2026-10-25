@@ -4,6 +4,8 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'kunal123borse/student-task-manager'
+        PYTHON = 'C:\\Users\\KUNAL\\AppData\\Local\\Python\\bin\\python.exe'
+        DOCKER = 'C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
     }
 
     stages {
@@ -16,45 +18,46 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat '"C:\\Users\\KUNAL\\AppData\\Local\\Python\\bin\\python.exe" -m pip install -r requirements.txt'
+                bat '"%PYTHON%" -m pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat '"C:\\Users\\KUNAL\\AppData\\Local\\Python\\bin\\python.exe" -m pytest -v'
+                bat '"%PYTHON%" -m pytest -v'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat '"C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t %DOCKER_IMAGE%:latest .'
+                bat '"%DOCKER%" build -t %DOCKER_IMAGE%:latest .'
             }
         }
 
-        
-stage('Push to Docker Hub') {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'dockerhub-creds',
-            usernameVariable: 'DOCKERHUB_USER',
-            passwordVariable: 'DOCKERHUB_TOKEN'
-        )]) {
-            bat '''
-                @echo off
-                "C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" logout
-                echo %DOCKERHUB_TOKEN% | "C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" login --username %DOCKERHUB_USER% --password-stdin
-                if errorlevel 1 exit /b 1
-                "C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push %DOCKER_IMAGE%:latest
-                if errorlevel 1 exit /b 1
-            '''
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    bat '''
+                        @echo off
+                        "%DOCKER%" logout
+                        echo %DOCKERHUB_TOKEN% | "%DOCKER%" login --username %DOCKERHUB_USER% --password-stdin
+                        if errorlevel 1 exit /b 1
+                        "%DOCKER%" push %DOCKER_IMAGE%:latest
+                        if errorlevel 1 exit /b 1
+                        "%DOCKER%" logout
+                    '''
+                }
+            }
         }
     }
-}
 
     post {
         success {
-            echo 'CI/CD image build and Docker Hub push completed successfully!'
+            echo 'Pipeline completed successfully!'
         }
         failure {
             echo 'Pipeline failed. Check the console output.'
