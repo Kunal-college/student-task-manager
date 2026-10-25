@@ -1,0 +1,152 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #f3f6fb;
+    color: #1e293b;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: min(720px, 92%);
+    margin: 60px auto;
+}
+
+header {
+    margin-bottom: 30px;
+}
+
+.eyebrow {
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+h1 {
+    margin: 10px 0;
+    font-size: 36px;
+}
+
+.subtitle {
+    color: #64748b;
+}
+
+.add-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    font-size: 15px;
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 11px 15px;
+}
+
+.add-form button {
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+}
+
+.task-panel {
+    padding: 22px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px #0f172a0a;
+}
+
+.panel-heading,
+.task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.panel-heading {
+    margin-bottom: 18px;
+}
+
+.panel-heading h2 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.panel-heading span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.task {
+    padding: 14px 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.task form {
+    margin: 0;
+}
+
+.check-button {
+    color: #2563eb;
+    background: #eff6ff;
+    font-size: 18px;
+}
+
+.task-title {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.completed .task-title {
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.delete-button {
+    background: #fff1f2;
+    color: #be123c;
+}
+
+.empty-state {
+    padding: 25px 0;
+    text-align: center;
+    color: #64748b;
+}
+
+footer {
+    margin-top: 25px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 30px auto;
+    }
+
+    h1 {
+        font-size: 29px;
+    }
+
+    .add-form {
+        flex-direction: column;
+    }
+}

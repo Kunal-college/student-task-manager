@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Task Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <header>
+            <p class="eyebrow">STUDENT PRODUCTIVITY</p>
+            <h1>My Task Manager</h1>
+            <p class="subtitle">Organize your work. One task at a time.</p>
+        </header>
+
+        <form action="{{ url_for('add_task') }}" method="POST" class="add-form">
+            <input type="text" name="title" placeholder="What do you need to do?"
+                   maxlength="200" required>
+            <button type="submit">Add Task</button>
+        </form>
+
+        <section class="task-panel">
+            <div class="panel-heading">
+                <h2>Your tasks</h2>
+                <span>{{ tasks|length }} total</span>
+            </div>
+
+            {% if tasks %}
+                {% for task in tasks %}
+                    <article class="task {% if task['completed'] %}completed{% endif %}">
+                        <form action="{{ url_for('complete_task', task_id=task['id']) }}"
+                              method="POST">
+                            <button class="check-button" type="submit">
+                                {{ '✓' if task['completed'] else '○' }}
+                            </button>
+                        </form>
+
+                        <span class="task-title">{{ task['title'] }}</span>
+
+                        <form action="{{ url_for('delete_task', task_id=task['id']) }}"
+                              method="POST">
+                            <button class="delete-button" type="submit">Delete</button>
+                        </form>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>No tasks yet.</p>
+                    <p>Add your first task above to get started.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <footer>Built with Python, Flask and SQLite</footer>
+    </main>
+</body>
+</html>
