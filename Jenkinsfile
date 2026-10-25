@@ -24,7 +24,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t student-task-manager:latest .'
+                bat '"C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" version'
+bat '"C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t student-task-manager:latest .'
             }
         }
     }
