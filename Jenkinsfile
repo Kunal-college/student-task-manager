@@ -34,35 +34,34 @@ pipeline {
             }
         }
 
-        
-stage('Push to Docker Hub') {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'dockerhub-creds',
-            usernameVariable: 'DOCKERHUB_USER',
-            passwordVariable: 'DOCKERHUB_TOKEN'
-        )]) {
-            powershell '''
-                $ErrorActionPreference = "Stop"
-                $docker = "C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe"
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    powershell '''
+                        $ErrorActionPreference = "Stop"
+                        $docker = $env:DOCKER
 
-                $env:DOCKERHUB_TOKEN |
-                    & $docker login --username $env:DOCKERHUB_USER --password-stdin
+                        $env:DOCKERHUB_TOKEN |
+                            & $docker login --username $env:DOCKERHUB_USER --password-stdin
 
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Docker Hub login failed"
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Docker Hub login failed"
+                        }
+
+                        & $docker push "$env:DOCKER_IMAGE`:latest"
+
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Docker Hub push failed"
+                        }
+                    '''
                 }
-
-                & $docker push "$env:DOCKER_IMAGE`:latest"
-
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Docker Hub push failed"
-                }
-            '''
+            }
         }
     }
-}
-
 
     post {
         success {
