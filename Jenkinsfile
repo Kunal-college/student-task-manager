@@ -1,10 +1,9 @@
+
 pipeline {
     agent any
 
     environment {
         DOCKER_IMAGE = 'kunal123borse/student-task-manager'
-        PYTHON = 'C:\\Users\\KUNAL\\AppData\\Local\\Python\\bin\\python.exe'
-        DOCKER = 'C:\\Users\\KUNAL\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
     }
 
     stages {
@@ -17,19 +16,19 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat '"%PYTHON%" -m pip install -r requirements.txt'
+                sh 'python3 -m pip install --user -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat '"%PYTHON%" -m pytest -v'
+                sh 'python3 -m pytest -v'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat '"%DOCKER%" build -t %DOCKER_IMAGE%:latest .'
+                sh 'sudo docker build -t $DOCKER_IMAGE:latest .'
             }
         }
 
@@ -40,22 +39,10 @@ pipeline {
                     usernameVariable: 'DOCKERHUB_USER',
                     passwordVariable: 'DOCKERHUB_TOKEN'
                 )]) {
-                    powershell '''
-                        $ErrorActionPreference = "Stop"
-                        $docker = $env:DOCKER
-
-                        $env:DOCKERHUB_TOKEN |
-                            & $docker login --username $env:DOCKERHUB_USER --password-stdin
-
-                        if ($LASTEXITCODE -ne 0) {
-                            throw "Docker Hub login failed"
-                        }
-
-                        & $docker push "${env:DOCKER_IMAGE}:latest"
-
-                        if ($LASTEXITCODE -ne 0) {
-                            throw "Docker Hub push failed"
-                        }
+                    sh '''
+                        echo "$DOCKERHUB_TOKEN" | sudo docker login \
+                          --username "$DOCKERHUB_USER" --password-stdin
+                        sudo docker push "$DOCKER_IMAGE:latest"
                     '''
                 }
             }
