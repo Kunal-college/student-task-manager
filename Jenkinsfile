@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -35,34 +34,33 @@ pipeline {
         }
 
         stage('Push to Docker Hub') {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'dockerhub-creds',
-            usernameVariable: 'DOCKERHUB_USER',
-            passwordVariable: 'DOCKERHUB_TOKEN'
-        )]) {
-            powershell '''
-                $ErrorActionPreference = "Stop"
-                $docker = $env:DOCKER
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    powershell '''
+                        $ErrorActionPreference = "Stop"
+                        $docker = $env:DOCKER
 
-                # Trim any hidden trailing newlines or spaces from the token
-                $cleanToken = $env:DOCKERHUB_TOKEN.Trim()
+                        $env:DOCKERHUB_TOKEN |
+                            & $docker login --username $env:DOCKERHUB_USER --password-stdin
 
-                $cleanToken | & $docker login --username $env:DOCKERHUB_USER --password-stdin
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Docker Hub login failed"
+                        }
 
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Docker Hub login failed"
+                        & $docker push "${env:DOCKER_IMAGE}:latest"
+
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Docker Hub push failed"
+                        }
+                    '''
                 }
-
-                & $docker push "$env:DOCKER_IMAGE`:latest"
-
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Docker Hub push failed"
-                }
-            '''
+            }
         }
     }
-}
 
     post {
         success {
