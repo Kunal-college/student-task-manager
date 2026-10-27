@@ -11,22 +11,20 @@
     <main class="container">
         <header>
             <p class="eyebrow">STUDENT PRODUCTIVITY</p>
+            <p style="background-color: yellowgreen;">Let's do make some changes</p>
             <h1>My Task Manager</h1>
             <p class="subtitle">Organize your work. One task at a time.</p>
         </header>
-
         <form action="{{ url_for('add_task') }}" method="POST" class="add-form">
             <input type="text" name="title" placeholder="What do you need to do?"
                    maxlength="200" required>
             <button type="submit">Add Task</button>
         </form>
-
         <section class="task-panel">
             <div class="panel-heading">
                 <h2>Your tasks</h2>
                 <span>{{ tasks|length }} total</span>
             </div>
-
             {% if tasks %}
                 {% for task in tasks %}
                     <article class="task {% if task['completed'] %}completed{% endif %}">
@@ -36,13 +34,9 @@
                                 {{ '✓' if task['completed'] else '○' }}
                             </button>
                         </form>
-
                         <span class="task-title">{{ task['title'] }}</span>
-
                         <form action="{{ url_for('delete_task', task_id=task['id']) }}"
-                              method="POST">
                             <button class="delete-button" type="submit">Delete</button>
-                        </form>
                     </article>
                 {% endfor %}
             {% else %}
@@ -52,7 +46,6 @@
                 </div>
             {% endif %}
         </section>
-
         <footer>Built with Python, Flask and SQLite</footer>
     </main>
 </body>
